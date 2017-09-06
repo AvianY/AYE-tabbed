@@ -33,6 +33,16 @@ static Bool npisrelative  = False;
         } \
 }
 
+#define SETPROP_BM(p) { \
+        .v = (char *[]){ "/bin/sh", "-c", \
+                "prop=\"`xwininfo -children -id $1 | grep '^     0x' |" \
+                "sed -e's@^ *\\(0x[0-9a-f]*\\) \"\\([^\"]*\\)\".*@\\1 \\2@' |" \
+                "xargs -0 printf %b | cat ~/.surf/bookmarks | dmenu -l 10`\" &&" \
+                "xprop -id $1 -f $0 8s -set $0 \"$prop\"", \
+                p, winid, NULL \
+        } \
+}
+
 #define MODKEY ControlMask
 static Key keys[] = {
 	/* modifier             key        function     argument */
@@ -46,6 +56,7 @@ static Key keys[] = {
 	{ MODKEY,               XK_Tab,    rotate,      { .i = 0 } },
 
 	{ MODKEY,               XK_t,      spawn,       SETPROP("_TABBED_SELECT_TAB") },
+	{ MODKEY|ShiftMask,               XK_t,      spawn,       SETPROP_BM("_TABBED_SELECT_TAB") },
 	{ MODKEY,               XK_1,      move,        { .i = 0 } },
 	{ MODKEY,               XK_2,      move,        { .i = 1 } },
 	{ MODKEY,               XK_3,      move,        { .i = 2 } },
